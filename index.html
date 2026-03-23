@@ -184,14 +184,16 @@
 
     /* RESPONSIVE: TABLET & DESKTOP */
     @media (min-width: 768px) {
-      .container, .app-header-inner, .bottom-nav-inner { max-width: 720px; }
+      .container { max-width: 720px; margin-left: auto !important; margin-right: auto !important; }
+      .app-header-inner, .bottom-nav-inner { max-width: 720px; }
       .module-content-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
       .stage-pedagogy, .stage-reassurance { grid-column: 1 / -1; }
       .how-to-list, .method-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
       .week-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     }
     @media (min-width: 1024px) {
-      .container, .app-header-inner, .bottom-nav-inner { max-width: 960px; }
+      .container { max-width: 960px; }
+      .app-header-inner, .bottom-nav-inner { max-width: 960px; }
       .module-content-inner, .method-pillars { grid-template-columns: 1fr 1fr 1fr; }
       .how-to-list, .week-list { grid-template-columns: 1fr 1fr 1fr; }
     }
