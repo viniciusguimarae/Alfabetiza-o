@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="Central de Alfabetização Infantil — jornada pedagógica organizada em etapas para apoiar o desenvolvimento completo da leitura."/>
+  <title>Central de Alfabetização Infantil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary:#4A90D9; --primary-dark:#2E6FAF; --primary-light:#EBF4FF;
+      --accent:#F5A623; --accent-light:#FFF8ED;
+      --success:#3DBE7A; --success-light:#E8F9F1;
+      --bg:#F2F5F9; --card:#FFFFFF; --text:#1E2A3A; --text-muted:#6B7A90;
+      --border:#E2E8F0; --topbar-h:58px; --bottomnav-h:66px;
+      --r-sm:8px; --r-md:14px; --r-lg:20px;
+      --shadow:0 2px 10px rgba(30,42,58,.08);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;padding-top:var(--topbar-h);padding-bottom:var(--bottomnav-h)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:480px;margin:0 auto;padding:0 16px}
+
+    /* TOP BAR */
+    #app-header{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--card);border-bottom:1px solid var(--border);box-shadow:0 2px 8px rgba(30,42,58,.08);z-index:200;display:flex;align-items:center;justify-content:center}
+    .app-header-inner{max-width:480px;width:100%;padding:0 18px;display:flex;align-items:center;gap:10px}
+    .app-logo{width:34px;height:34px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .app-header-title{font-size:15px;font-weight:800;color:var(--text)}
+    .app-header-title span{display:block;font-size:11px;font-weight:600;color:var(--text-muted)}
+
+    /* BOTTOM NAV */
+    #bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottomnav-h);background:var(--card);border-top:1px solid var(--border);box-shadow:0 -2px 10px rgba(30,42,58,.07);z-index:200;display:flex;align-items:stretch;justify-content:center}
+    .bottom-nav-inner{max-width:480px;width:100%;display:flex}
+    .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;font-family:'Nunito',sans-serif;color:var(--text-muted);font-size:10px;font-weight:700;transition:color .2s;-webkit-tap-highlight-color:transparent;padding-bottom:4px}
+    .nav-tab .nav-icon{font-size:20px;line-height:1}
+    .nav-tab.active{color:var(--primary)}
+
+    /* SCREENS */
+    .screen{display:none}.screen.active{display:block}
+
+    /* HOME */
+    #screen-home{padding:20px 0 28px}
+    .greeting-strip{padding:0 16px 18px}
+    .greeting-strip h1{font-size:21px;font-weight:900;color:var(--text)}
+    .greeting-strip p{font-size:13px;color:var(--text-muted);margin-top:2px}
+
+    /* HERO CARD */
+    .journey-start-card{margin:0 16px 18px;background:linear-gradient(135deg,#2E6FAF 0%,#4A90D9 60%,#5BA3E8 100%);border-radius:var(--r-lg);padding:22px 20px 20px;color:#fff;box-shadow:0 6px 24px rgba(74,144,217,.30)}
+    .card-eyebrow{font-size:10px;font-weight:700;opacity:.75;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
+    .journey-start-card h2{font-size:20px;font-weight:900;line-height:1.25;margin-bottom:6px}
+    .journey-start-card .hero-sub{font-size:13px;opacity:.88;line-height:1.55;margin-bottom:16px}
+    .btn-start{display:inline-flex;align-items:center;gap:7px;background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;padding:12px 20px;border:none;border-radius:var(--r-md);cursor:pointer;box-shadow:0 3px 12px rgba(245,166,35,.40);transition:opacity .2s,transform .1s}
+    .btn-start:active{transform:scale(.97);opacity:.9}
+
+    /* PROGRESS */
+    .progress-block{margin:0 16px 20px;background:var(--card);border-radius:var(--r-md);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+    .progress-block-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .progress-block-header .label{font-size:13px;font-weight:800;color:var(--text)}
+    .stage-tag{font-size:11px;font-weight:700;background:var(--primary-light);color:var(--primary-dark);padding:3px 10px;border-radius:99px}
+    .progress-segments{display:flex;gap:5px}
+    .seg{flex:1;height:8px;border-radius:99px;background:var(--border)}
+    .seg.current{background:var(--accent)}
+    .progress-hint{margin-top:7px;font-size:12px;color:var(--text-muted);font-weight:600}
+
+    /* SECTION LABEL */
+    .section-label{font-size:12px;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:.7px;padding:0 16px;margin-bottom:10px}
+
+    /* MODULE CARDS */
+    .modules-list{display:flex;flex-direction:column;gap:10px;padding:0 16px}
+    .module-card{background:var(--card);border-radius:var(--r-md);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .module-card-header{display:flex;align-items:center;gap:12px;padding:14px 14px;transition:background .15s}
+    .module-card-header:active{background:var(--bg)}
+    .module-num{width:38px;height:38px;min-width:38px;border-radius:var(--r-sm);background:var(--primary-light);color:var(--primary-dark);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900}
+    .module-card.bonus .module-num{background:var(--accent-light);color:#B07410}
+    .module-info{flex:1}
+    .module-info strong{display:block;font-size:14px;font-weight:800;color:var(--text);line-height:1.3}
+    .module-info span{font-size:12px;color:var(--text-muted);font-weight:600}
+    .module-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+    .module-arrow{font-size:18px;color:var(--text-muted);transition:transform .25s}
+    .module-card.open .module-arrow{transform:rotate(90deg)}
+    .module-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--primary-light);color:var(--primary-dark)}
+    .module-badge.locked{background:var(--bg);color:var(--text-muted)}
+    .module-badge.bonus-badge{background:var(--accent-light);color:#B07410}
+
+    /* ACCORDION */
+    .module-content{max-height:0;overflow:hidden;transition:max-height .4s ease}
+    .module-card.open .module-content{max-height:2400px}
+    .module-content-inner{border-top:1px solid var(--border);background:var(--bg);padding:14px 14px 16px;display:flex;flex-direction:column;gap:12px}
+
+    /* STAGE PEDAGOGY BLOCK */
+    .stage-pedagogy{background:#fff;border-left:3px solid var(--primary);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:12px 14px}
+    .stage-pedagogy .ped-title{font-size:13px;font-weight:800;color:var(--primary-dark);margin-bottom:5px}
+    .stage-pedagogy p{font-size:12px;color:var(--text-muted);line-height:1.6}
+    .stage-pedagogy .ped-tips{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+    .ped-tip{font-size:12px;color:var(--text);font-weight:600;display:flex;align-items:flex-start;gap:6px}
+    .ped-tip::before{content:'→';color:var(--primary);flex-shrink:0}
+
+    /* MATERIAL CARDS */
+    .material-card{background:var(--card);border-radius:var(--r-md);border:1px solid var(--border);padding:13px;box-shadow:0 1px 6px rgba(30,42,58,.05)}
+    .mat-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:8px}
+    .mat-icon{width:42px;height:42px;min-width:42px;border-radius:var(--r-sm);background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:20px}
+    .mat-meta{flex:1}
+    .mat-meta strong{display:block;font-size:14px;font-weight:800;color:var(--text);line-height:1.25;margin-bottom:3px}
+    .mat-meta p{font-size:12px;color:var(--text-muted);line-height:1.5}
+    .mat-skill{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;background:var(--primary-light);color:var(--primary-dark);padding:2px 8px;border-radius:99px;margin-bottom:7px}
+    .mat-tip{background:var(--accent-light);border-radius:var(--r-sm);padding:8px 10px;margin-bottom:8px;font-size:12px;color:var(--text);line-height:1.5}
+    .mat-tip strong{font-weight:800;display:block;margin-bottom:2px;color:var(--accent)}
+    .mat-outcome{font-size:11px;font-weight:700;color:var(--success);margin-bottom:9px;display:flex;gap:5px;align-items:flex-start}
+    .mat-outcome::before{content:'✓';flex-shrink:0}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;margin-bottom:9px}
+    .status-badge.iniciar{background:var(--primary-light);color:var(--primary-dark)}
+    .status-badge.concluido{background:var(--success-light);color:#1E7A49}
+    .btn-download{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent}
+    .btn-download:active{background:var(--primary);color:#fff}
+
+    /* EMOTIONAL QUOTE */
+    .emo-quote{background:var(--card);border-radius:var(--r-md);border:1px solid var(--border);padding:13px 15px;display:flex;align-items:flex-start;gap:10px}
+    .emo-quote .eq-icon{font-size:20px;flex-shrink:0}
+    .emo-quote p{font-size:12px;font-weight:700;color:var(--text-muted);line-height:1.6;font-style:italic}
+
+    /* SCREENS: ETAPAS / ROTINA / AJUDA / MÉTODO */
+    #screen-etapas,#screen-rotina,#screen-ajuda,#screen-metodo{padding:20px 0 28px}
+    .screen-title{font-size:19px;font-weight:900;color:var(--text);padding:0 16px;margin-bottom:4px}
+    .screen-sub{font-size:13px;color:var(--text-muted);padding:0 16px;margin-bottom:18px;line-height:1.55}
+
+    /* ROUTINE */
+    .plan-box{margin:0 16px;background:linear-gradient(135deg,#2E6FAF 0%,#4A90D9 100%);border-radius:var(--r-lg);padding:24px 18px;color:#fff}
+    .plan-box h2{font-size:17px;font-weight:800;margin-bottom:4px}
+    .plan-box .plan-sub{font-size:12px;opacity:.85;margin-bottom:18px}
+    .week-list{display:flex;flex-direction:column;gap:9px}
+    .week-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.15);border-radius:var(--r-md);padding:12px 14px}
+    .week-num{width:32px;height:32px;min-width:32px;background:rgba(255,255,255,.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900}
+    .week-info{flex:1}
+    .week-info strong{display:block;font-size:13px;font-weight:800}
+    .week-info span{font-size:11px;opacity:.82}
+    .week-tag{font-size:10px;font-weight:700;background:rgba(255,255,255,.22);padding:2px 7px;border-radius:99px}
+    .routine-note{margin:14px 16px 0;background:var(--accent-light);border:1.5px solid var(--accent);border-radius:var(--r-md);padding:12px 14px;font-size:12px;font-weight:600;color:var(--text);line-height:1.6;display:flex;gap:9px;align-items:flex-start}
+    .routine-note .note-icon{font-size:18px;flex-shrink:0}
+
+    /* AJUDA */
+    .how-to-box{margin:0 16px 18px;background:var(--accent-light);border:2px solid var(--accent);border-radius:var(--r-lg);padding:20px 16px}
+    .how-to-box .box-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+    .how-to-box .box-header h2{font-size:16px;font-weight:800;color:var(--text)}
+    .how-to-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .how-to-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;font-weight:600;color:var(--text);line-height:1.5}
+    .how-to-list li .check{width:20px;height:20px;min-width:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;margin-top:1px}
+    .footer-message{margin:0 16px;background:var(--text);color:#fff;border-radius:var(--r-lg);padding:24px 18px;text-align:center}
+    .footer-message .fi{font-size:32px;margin-bottom:10px}
+    .footer-message blockquote{font-size:13px;font-weight:600;line-height:1.7;opacity:.9;font-style:normal}
+    .divider{height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));width:44px;border-radius:99px;margin:10px auto}
+
+    /* SOBRE O MÉTODO */
+    .method-badge{display:inline-flex;align-items:center;gap:6px;background:var(--primary-light);color:var(--primary-dark);font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;margin:0 16px 14px}
+    .method-card{margin:0 16px 14px;background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow)}
+    .method-card h3{font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .method-card p{font-size:13px;color:var(--text-muted);line-height:1.65}
+    .method-pillars{margin:0 16px 14px;display:flex;flex-direction:column;gap:10px}
+    .pillar{display:flex;gap:12px;align-items:flex-start;background:var(--card);border-radius:var(--r-md);border:1px solid var(--border);padding:13px}
+    .pillar-icon{font-size:22px;flex-shrink:0}
+    .pillar-text strong{display:block;font-size:13px;font-weight:800;color:var(--text);margin-bottom:3px}
+    .pillar-text p{font-size:12px;color:var(--text-muted);line-height:1.55}
+    .bncc-note{margin:0 16px 14px;background:var(--primary-light);border-left:3px solid var(--primary);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:12px 14px;font-size:12px;font-weight:600;color:var(--primary-dark);line-height:1.6}
+    /* RESULTADOS + MICROCOPY */
+    .resultados-card{margin:0 16px 18px;background:var(--card);border-radius:var(--r-lg);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow)}
+    .resultados-card h3{font-size:14px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .results-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .results-list li{display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:600;color:var(--text);line-height:1.5}
+    .results-list li .ri{width:22px;height:22px;min-width:22px;background:var(--success-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--success);margin-top:1px;flex-shrink:0}
+    .microcopy-strip{margin:0 16px 18px;background:var(--accent-light);border:1.5px solid #FFD99A;border-radius:var(--r-md);padding:13px 15px;display:flex;align-items:flex-start;gap:10px}
+    .microcopy-strip .ms-icon{font-size:20px;flex-shrink:0}
+    .microcopy-strip p{font-size:13px;font-weight:700;color:var(--text);line-height:1.6}
+    .microcopy-strip p span{display:block;font-size:12px;font-weight:600;color:var(--text-muted);margin-top:2px}
+    .bncc-highlight{margin:0 16px 14px;background:linear-gradient(135deg,#EBF4FF 0%,#F0F8FF 100%);border:1.5px solid var(--primary);border-radius:var(--r-md);padding:14px 16px}
+    .bncc-highlight .bh-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+    .bncc-highlight .bh-badge{font-size:10px;font-weight:700;background:var(--primary);color:#fff;padding:2px 8px;border-radius:99px;letter-spacing:.3px}
+    .bncc-highlight p{font-size:12px;font-weight:600;color:var(--primary-dark);line-height:1.65}
+    .stage-reassurance{background:linear-gradient(135deg,#F0FFF6 0%,#E8F9F1 100%);border:1.5px solid #A8E6C5;border-radius:var(--r-md);padding:13px 15px;display:flex;gap:10px;align-items:flex-start}
+    .stage-reassurance .sr-icon{font-size:20px;flex-shrink:0}
+    .stage-reassurance p{font-size:12px;font-weight:700;color:#1E5C3A;line-height:1.65}
+    .stage-reassurance p span{display:block;font-size:11px;font-weight:600;color:#3DBE7A;margin-top:2px}
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="app-header">
+  <div class="app-header-inner">
+    <div class="app-logo">📚</div>
+    <div>
+      <div class="app-header-title">Central de Alfabetização
+        <span>Plataforma Educacional</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ SCREEN: INÍCIO ══════════ -->
+<div id="screen-home" class="screen active">
+  <div class="greeting-strip container">
+    <h1>Olá, bem-vinda! 👋</h1>
+    <p>Acompanhe a jornada de alfabetização do seu filho com cuidado e constância.</p>
+  </div>
+
+  <div class="journey-start-card container">
+    <div class="card-eyebrow">✨ Método Progressivo de Alfabetização</div>
+    <h2>Começar Jornada</h2>
+    <p class="hero-sub">Uma jornada organizada em etapas pedagógicas para apoiar o desenvolvimento completo da leitura.</p>
+    <button class="btn-start" onclick="openModuleFromHome()">▶ INICIAR ETAPA 1</button>
+  </div>
+
+  <div class="progress-block container">
+    <div class="progress-block-header">
+      <span class="label">Progresso da jornada</span>
+      <span class="stage-tag">Preparação</span>
+    </div>
+    <div class="progress-segments">
+      <div class="seg current"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+      <div class="seg"></div>
+    </div>
+    <p class="progress-hint">Etapa atual: 1 de 4 — Preparação motora e visual</p>
+  </div>
+
+  <!-- RESULTADOS ESPERADOS -->
+  <div class="resultados-card container">
+    <h3>🌱 Resultados esperados com a jornada</h3>
+    <ul class="results-list">
+      <li><span class="ri">✓</span>Desenvolvimento gradual da coordenação motora fina</li>
+      <li><span class="ri">✓</span>Aumento da segurança e confiança ao escrever</li>
+      <li><span class="ri">✓</span>Reconhecimento mais rápido de letras e sílabas</li>
+      <li><span class="ri">✓</span>Início natural e tranquilo da leitura</li>
+      <li><span class="ri">✓</span>Criação de uma rotina positiva de aprendizagem</li>
+    </ul>
+  </div>
+
+  <!-- MICROCOPY EMOCIONAL -->
+  <div class="microcopy-strip container">
+    <span class="ms-icon">🤍</span>
+    <p>Você não precisa ser professora para ajudar seu filho a aprender.
+      <span>Cada atividade, por menor que seja, fortalece a base da leitura. O avanço acontece de forma respeitosa e progressiva.</span>
+    </p>
+  </div>
+
+  <div class="section-label container">Etapas de aprendizagem</div>
+  <div class="modules-list container" id="home-modules">
+
+    <!-- ETAPA 1 -->
+    <div class="module-card" id="mod-1" onclick="toggleModule('mod-1')">
+      <div class="module-card-header">
+        <div class="module-num">1</div>
+        <div class="module-info">
+          <strong>Preparação motora e visual</strong>
+          <span>10 materiais disponíveis</span>
+        </div>
+        <div class="module-right">
+          <span class="module-badge">Iniciar</span>
+          <span class="module-arrow">›</span>
+        </div>
+      </div>
+      <div class="module-content">
+        <div class="module-content-inner">
+          <div class="stage-pedagogy">
+            <div class="ped-title">🎯 Por que esta etapa é importante?</div>
+            <p>Esta fase desenvolve a coordenação motora fina e o reconhecimento visual de padrões — habilidades fundamentais para que a criança inicie a escrita com segurança e fluidez.</p>
+            <div class="ped-tips">
+              <div class="ped-tip">A criança aprende a controlar o lápis com mais precisão</div>
+              <div class="ped-tip">Desenvolve a percepção visual de formas e traçados</div>
+              <div class="ped-tip">Use uma sessão de 10–15 min por dia, sem pressa</div>
+            </div>
+          </div>
+
+          <!-- Início 10 Cards Etapa 1 -->
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✏️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 1 - Bastão (1 a 25)</strong>
+                <p>Traçados básicos para iniciar o controle motor da mão em formato bastão.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Coordenação Motora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Peça que a criança trace devagar, sem levantar o lápis. Reforce o esforço, não a perfeição.</div>
+            <div class="mat-outcome">Ajuda a criança a ganhar segurança e firmeza ao escrever</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel l - Bastão-1-25.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✏️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 1 - Bastão (26 a 52)</strong>
+                <p>Avanço nos traçados retos e curvos do formato bastão.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Coordenação Motora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Continue incentivando a postura da mão e o ritmo lento.</div>
+            <div class="mat-outcome">Aumenta a precisão do movimento fino da mão</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel l - Bastão-26-52.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✍️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 1 - Cursiva (1 a 25)</strong>
+                <p>Introdução aos movimentos fluidos e contínuos da letra cursiva.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Coordenação Motora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>A cursiva exige que o lápis não saia do papel. Ajude a criança a guiar o movimento inteiro.</div>
+            <div class="mat-outcome">Desenvolve a agilidade e fluidez do pulso</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel l - Letra Cursiva-1-25.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✍️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 1 - Cursiva (26 a 52)</strong>
+                <p>Traçados curvos mais complexos para consolidação do movimento.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Coordenação Motora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Deixe a criança encontrar seu próprio ritmo, sem pressa para terminar a folha.</div>
+            <div class="mat-outcome">Prepara a memória muscular para as letras cursivas reais</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel l - Letra Cursiva-26-52.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖊️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Bastão (1 a 10)</strong>
+                <p>Formas direcionais para controle de espaço em letra bastão.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Controle Visomotor</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Observe se a pressão no lápis está mais leve e o movimento mais controlado.</div>
+            <div class="mat-outcome">Fortalece a musculatura da mão e a noção espacial</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Bastão-1-10.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖊️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Bastão (11 a 40)</strong>
+                <p>Progressão em formas geométricas e linhas pontilhadas.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Controle Visomotor</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Elogie o contorno bem feito dentro da linha pontilhada.</div>
+            <div class="mat-outcome">Favorece a caligrafia alinhada no caderno escolar</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Bastão-11-40.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖊️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Bastão (41 a 63)</strong>
+                <p>Finalização da base visual e motora em letra bastão.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Controle Visomotor</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Nesta fase, a criança já deve traçar com firmeza quase natural.</div>
+            <div class="mat-outcome">Consolida a independência motora para escrever letras separadas</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Bastão-41-63.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖋️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Cursiva (1 a 10)</strong>
+                <p>Caminhos curvos continuados para fluidez.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Progressão Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>A mão de apoio na folha ajuda na estabilidade do movimento contínuo da letra cursiva.</div>
+            <div class="mat-outcome">Cria as fundações para escrita rápida e legível</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Letra Cursiva-1-10.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖋️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Cursiva (11 a 40)</strong>
+                <p>Desafio motor com voltas, laços e ondas completas.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Progressão Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Mantenha 15 minutos de treino. Se a mão cansar, pare. A constância vale mais que a exaustão.</div>
+            <div class="mat-outcome">Evita fadiga motora futura ao escrever textos escolares longos</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Letra Cursiva-11-40.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🖋️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 2 - Cursiva (41 a 63)</strong>
+                <p>Consolidação definitiva do movimento sinuoso pré-cursivo.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Progressão Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Celebre essa conquista final da preparação motora com a criança!</div>
+            <div class="mat-outcome">Prepara totalmente a criança para traçar de A a Z em cursiva com facilidade</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 2 - Letra Cursiva-41-63.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          <!-- Fim 10 Cards Etapa 1 -->
+
+          <div class="stage-reassurance">
+            <span class="sr-icon">🌿</span>
+            <p>Avançar no próprio ritmo é mais importante do que avançar rápido.
+              <span>Mesmo pequenas sessões diárias já geram progresso real e duradouro.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPA 2 -->
+    <div class="module-card" id="mod-2" onclick="toggleModule('mod-2')">
+      <div class="module-card-header">
+        <div class="module-num">2</div>
+        <div class="module-info">
+          <strong>Sons e sílabas</strong>
+          <span>9 materiais disponíveis</span>
+        </div>
+        <div class="module-right">
+          <span class="module-badge">Iniciar</span>
+          <span class="module-arrow">›</span>
+        </div>
+      </div>
+      <div class="module-content">
+        <div class="module-content-inner">
+          <div class="stage-pedagogy">
+            <div class="ped-title">🎯 Por que esta etapa é importante?</div>
+            <p>A consciência fonológica é a capacidade de perceber que as palavras são formadas por sons. Pesquisas mostram que é um dos maiores preditores do sucesso na leitura.</p>
+            <div class="ped-tips">
+              <div class="ped-tip">A criança começa a "ouvir" as partes das palavras</div>
+              <div class="ped-tip">Facilita a decodificação de palavras novas no futuro</div>
+              <div class="ped-tip">Brinque com rimas e sons no dia a dia para reforçar</div>
+            </div>
+          </div>
+
+          <!-- Início 9 Cards Etapa 2 -->
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✏️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Bastão (1 a 8)</strong>
+                <p>Aproximação real da estrutura de letras bastão do vocabulário.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Direcionada</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Associe os traços com a fonética quando possível ("este traço parece o A").</div>
+            <div class="mat-outcome">Une a coordenação motora fina com o reconhecimento alfabético inicial</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Bastão-1-8.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✏️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Bastão (9 a 20)</strong>
+                <p>Continuidade na formatação das vogais e primeiras consoantes bastão.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Direcionada</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Garanta que o traçado ocorra de cima para baixo.</div>
+            <div class="mat-outcome">Padroniza a forma de escrita e evita letras espelhadas</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Bastão-9-20.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✏️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Bastão (21 a 34)</strong>
+                <p>Consolidação do abecedário bastão com firmeza.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Direcionada</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Aproveite para brincar de adivinhar o som de cada letra dominada.</div>
+            <div class="mat-outcome">Criança domina a escrita do próprio nome e palavras curtas</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Bastão-21-34.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✍️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Cursiva (1 a 8)</strong>
+                <p>Início do traçado real das letras cursivas, unindo vogais.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Reforce a "mãozinha" que uma letra dá para a outra na cursiva.</div>
+            <div class="mat-outcome">Cria transição suave do bastão para o caderno de caligrafia</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Letra Cursiva-1-8.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✍️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Cursiva (9 a 17)</strong>
+                <p>Construção fluida do repertório de consoantes e ligações cursivas.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Vá no ritmo da criança; cursiva exige muita concentração mental.</div>
+            <div class="mat-outcome">Automatiza o movimento contínuo da mão no papel</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Letra Cursiva-9-17.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✍️</div>
+              <div class="mat-meta">
+                <strong>Grafismos Nível 3 - Cursiva (18 a 34)</strong>
+                <p>Consolidação do alfabeto cursivo completo.</p>
+              </div>
+            </div>
+            <span class="mat-skill">✋ Escrita Cursiva</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Final ao traçar: elogie a legibilidade e o alinhamento das palavras formadas.</div>
+            <div class="mat-outcome">Criança pronta para escrita cursiva longa nas atividades escolares diárias</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/Caderno de Atividades - Grafismos Fonéticos Nivel 3 - Letra Cursiva-18-34.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🔤</div>
+              <div class="mat-meta">
+                <strong>Separe as Sílabas</strong>
+                <p>Identifica e separa sílabas nas palavras com apoio visual.</p>
+              </div>
+            </div>
+            <span class="mat-skill">👂 Consciência Fonológica</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Bata palmas a cada sílaba com a criança. Faça a atividade em voz alta antes de escrever.</div>
+            <div class="mat-outcome">Desenvolve a percepção auditiva fundamental para não "engolir" letras</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 1 - SEPARE AS SÍLABAS.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">🎲</div>
+              <div class="mat-meta">
+                <strong>Jogo Fichas Silábicas</strong>
+                <p>Atividades lúdicas para reconhecer e combinar sons e formar palavras.</p>
+              </div>
+            </div>
+            <span class="mat-skill">👂 Consciência Fonológica</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Recorte e use como brincadeira constante. Aprender brincando tira a pressão da criança.</div>
+            <div class="mat-outcome">Torna o aprendizado visível, prazeroso e interativo</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 2 - JOGO FICHAS SILABICAS.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">📝</div>
+              <div class="mat-meta">
+                <strong>Leitura Sílabas Simples</strong>
+                <p>Treino focado nas sílabas regulares mais comuns e famílias silábicas.</p>
+              </div>
+            </div>
+            <span class="mat-skill">📖 Princípio Alfabético</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Pratique sílabas por família (BA-TA-CA). Ajude-a a juntar os sons em vez de apenas decorar.</div>
+            <div class="mat-outcome">Cria a ponte definitiva entre as letras soltas e a leitura real</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 6 - LEITURA SILABAS SIMPLES.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          <!-- Fim 9 Cards Etapa 2 -->
+
+          <div class="stage-reassurance">
+            <span class="sr-icon">👂</span>
+            <p>Cada som reconhecido é uma semente plantada na mente da criança.
+              <span>O aprendizado acontece com constância e carinho — não com pressa.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPA 3 -->
+    <div class="module-card" id="mod-3" onclick="toggleModule('mod-3')">
+      <div class="module-card-header">
+        <div class="module-num">3</div>
+        <div class="module-info">
+          <strong>Primeiras leituras</strong>
+          <span>2 materiais disponíveis</span>
+        </div>
+        <div class="module-right">
+          <span class="module-badge">Iniciar</span>
+          <span class="module-arrow">›</span>
+        </div>
+      </div>
+      <div class="module-content">
+        <div class="module-content-inner">
+          <div class="stage-pedagogy">
+            <div class="ped-title">🎯 Por que esta etapa é importante?</div>
+            <p>Aqui a criança começa a juntar tudo: sons, sílabas e sentido. Muitas crianças leem as primeiras palavras sozinhas nesta fase — um momento de grande conquista para a família.</p>
+            <div class="ped-tips">
+              <div class="ped-tip">A criança começa a reconhecer palavras completas</div>
+              <div class="ped-tip">Leia junto em voz alta para modelar o ritmo e a entonação</div>
+              <div class="ped-tip">Comemore cada palavra lida — isso gera muito engajamento</div>
+            </div>
+          </div>
+
+          <!-- Início 2 Cards Etapa 3 -->
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">📖</div>
+              <div class="mat-meta">
+                <strong>Tiras da Leitura</strong>
+                <p>Frases curtas e divertidas em tira para os primeiros contatos reais com frases.</p>
+              </div>
+            </div>
+            <span class="mat-skill">📖 Decodificação Leitora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Aponte a palavra enquanto a criança lê. Se errar, releia a palavra correta sem tom de bronca e siga.</div>
+            <div class="mat-outcome">Quebra a ansiedade da criança diante de um texto muito longo</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 4 - Tiras da LEITURA .pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">⭐</div>
+              <div class="mat-meta">
+                <strong>Fluência Leitora</strong>
+                <p>Pequenos blocos e quadrinhos para acelerar o ritmo sem perder a compreensão de sentido.</p>
+              </div>
+            </div>
+            <span class="mat-skill">📖 Ritmo e Entonação</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Cronometre no celular leituras curtas e anote o tempo. Elas adoram bater o próprio recorde!</div>
+            <div class="mat-outcome">Aumenta drasticamente a fluência e a velocidade da leitura silenciosa</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 3 - FLUENCIA LEITORA.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          <!-- Fim 2 Cards Etapa 3 -->
+
+          <div class="stage-reassurance">
+            <span class="sr-icon">📖</span>
+            <p>Celebre cada palavra lida — por menor que seja, é uma grande conquista.
+              <span>Seu encorajamento é o combustível mais poderoso do aprendizado da criança.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ETAPA 4 -->
+    <div class="module-card" id="mod-4" onclick="toggleModule('mod-4')">
+      <div class="module-card-header">
+        <div class="module-num">4</div>
+        <div class="module-info">
+          <strong>Consolidação da leitura</strong>
+          <span>1 material disponível</span>
+        </div>
+        <div class="module-right">
+          <span class="module-badge">Iniciar</span>
+          <span class="module-arrow">›</span>
+        </div>
+      </div>
+      <div class="module-content">
+        <div class="module-content-inner">
+          <div class="stage-pedagogy">
+            <div class="ped-title">🎯 Por que esta etapa é importante?</div>
+            <p>A consolidação transforma a leitura de um esforço consciente em uma habilidade automática. A criança começa a ler com mais naturalidade, velocidade e entendimento.</p>
+            <div class="ped-tips">
+              <div class="ped-tip">Leitura silenciosa começa a se tornar possível</div>
+              <div class="ped-tip">A criança passa a compreender o que lê, não só decodificar</div>
+              <div class="ped-tip">Incentive a leitura de pequenos livros e histórias simples</div>
+            </div>
+          </div>
+
+          <!-- Início 1 Card Etapa 4 -->
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon">✂️</div>
+              <div class="mat-meta">
+                <strong>50 Textos Fatiados</strong>
+                <p>Material robusto com histórias fatiadas para ordenar e colar.</p>
+              </div>
+            </div>
+            <span class="mat-skill">🧠 Compreensão Leitora</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Após a criança montar a história embaralhada, pergunte: "Faz sentido?". Ela percebe e autocorrige.</div>
+            <div class="mat-outcome">Gera autonomia suprema: a criança decodifica e interpreta a lógica literária</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="pdfs/BÔNUS 5 - 50 TEXTOS FATIADOS SILABAS SIMPLES E COMPLEXAS.pdf" class="btn-download" download onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+          <!-- Fim 1 Card Etapa 4 -->
+
+          <div class="stage-reassurance">
+            <span class="sr-icon">🏆</span>
+            <p>Chegando até aqui, você e seu filho conquistaram algo incrível juntos.
+              <span>A leitura já não é um destino distante. Continue com presença e carinho.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BÔNUS -->
+    <div class="module-card bonus" id="mod-bonus" onclick="toggleModule('mod-bonus')">
+      <div class="module-card-header">
+        <div class="module-num">🎁</div>
+        <div class="module-info">
+          <strong>Materiais Complementares</strong>
+          <span>3 atividades extras de reforço</span>
+        </div>
+        <div class="module-right">
+          <span class="module-badge bonus-badge">Bônus</span>
+          <span class="module-arrow">›</span>
+        </div>
+      </div>
+      <div class="module-content">
+        <div class="module-content-inner">
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon" style="background:#FFF3E0">🧩</div>
+              <div class="mat-meta">
+                <strong>Caça-palavras Educativo</strong>
+                <p>Atividade lúdica para fixar o vocabulário trabalhado nas etapas.</p>
+              </div>
+            </div>
+            <span class="mat-skill">🧠 Vocabulário</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Encoraje a criança a dizer cada palavra em voz alta ao encontrá-la. Isso reforça a leitura e a pronúncia.</div>
+            <div class="mat-outcome">Expande o vocabulário e reforça ortografia de forma divertida</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="#" class="btn-download" onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon" style="background:#FFF3E0">🔡</div>
+              <div class="mat-meta">
+                <strong>Alfabeto Completo Ilustrado</strong>
+                <p>Ilustrações associadas a cada letra para apoio visual constante.</p>
+              </div>
+            </div>
+            <span class="mat-skill">👁️ Reconhecimento Visual</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Afixe na parede do quarto como referência visual. Consulte junto com a criança durante as atividades.</div>
+            <div class="mat-outcome">Cria âncoras visuais que aceleram o reconhecimento das letras</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="#" class="btn-download" onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+          <div class="material-card">
+            <div class="mat-top">
+              <div class="mat-icon" style="background:#FFF3E0">📅</div>
+              <div class="mat-meta">
+                <strong>Calendário de Prática</strong>
+                <p>Modelo para organizar e marcar os dias de estudo da criança.</p>
+              </div>
+            </div>
+            <span class="mat-skill">📅 Organização e Rotina</span>
+            <div class="mat-tip"><strong>💡 Como usar</strong>Deixe a criança marcar os próprios dias de estudo. A autonomia gera orgulho e motivação para continuar.</div>
+            <div class="mat-outcome">Cria hábito de estudo e senso de responsabilidade na criança</div>
+            <span class="status-badge iniciar">⬤ Iniciar</span>
+            <a href="#" class="btn-download" onclick="event.stopPropagation()">⬇ BAIXAR MATERIAL</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /modules-list -->
+</div><!-- /screen-home -->
+
+<!-- ══════════ SCREEN: ETAPAS ══════════ -->
+<div id="screen-etapas" class="screen">
+  <p class="screen-title">📋 Todas as Etapas</p>
+  <p class="screen-sub">Explore cada etapa da jornada e baixe os materiais no seu ritmo.</p>
+  <div class="modules-list container" id="etapas-modules"></div>
+</div>
+
+<!-- ══════════ SCREEN: ROTINA ══════════ -->
+<div id="screen-rotina" class="screen">
+  <p class="screen-title">🗓 Rotina Sugerida</p>
+  <p class="screen-sub">Um plano simples para organizar as semanas de prática com seu filho.</p>
+  <div class="plan-box container">
+    <h2>🗓 Plano sugerido de prática</h2>
+    <p class="plan-sub">15 minutos por dia são suficientes para grandes avanços.</p>
+    <div class="week-list">
+      <div class="week-item">
+        <div class="week-num">1</div>
+        <div class="week-info"><strong>Semana 1</strong><span>Preparação motora e visual</span></div>
+        <span class="week-tag">Etapa 1</span>
+      </div>
+      <div class="week-item">
+        <div class="week-num">2</div>
+        <div class="week-info"><strong>Semana 2</strong><span>Sons e sílabas</span></div>
+        <span class="week-tag">Etapa 2</span>
+      </div>
+      <div class="week-item">
+        <div class="week-num">3</div>
+        <div class="week-info"><strong>Semana 3</strong><span>Primeiras leituras</span></div>
+        <span class="week-tag">Etapa 3</span>
+      </div>
+      <div class="week-item">
+        <div class="week-num">4</div>
+        <div class="week-info"><strong>Semana 4</strong><span>Consolidação da leitura</span></div>
+        <span class="week-tag">Etapa 4</span>
+      </div>
+    </div>
+  </div>
+  <div class="routine-note container">
+    <span class="note-icon">💡</span>
+    <span>A constância supera a intensidade. Sessões curtas e diárias produzem resultados muito mais sólidos do que longas sessões esporádicas.</span>
+  </div>
+  <div style="height:12px"></div>
+  <div class="microcopy-strip container">
+    <span class="ms-icon">🤍</span>
+    <p>Você não precisa acertar tudo todos os dias.
+      <span>Aparecer já é o suficiente. A criança aprende quando sente que há alguém presente com ela.</span>
+    </p>
+  </div>
+  <div style="height:4px"></div>
+  <div class="stage-reassurance container">
+    <span class="sr-icon">🌻</span>
+    <p>Respeite o ritmo da criança. O aprendizado não tem pressa — tem direção.
+      <span>Cada semana cumprida é uma evidência de que você está fazendo a diferença.</span>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: AJUDA ══════════ -->
+<div id="screen-ajuda" class="screen">
+  <p class="screen-title">❓ Como Utilizar</p>
+  <p class="screen-sub">Orientações para aproveitar ao máximo os materiais da jornada.</p>
+  <div class="how-to-box container">
+    <div class="box-header">
+      <span style="font-size:24px">💡</span>
+      <h2>Como utilizar o método</h2>
+    </div>
+    <ul class="how-to-list">
+      <li><span class="check">✓</span>Imprima os cadernos em papel comum ou sulfite</li>
+      <li><span class="check">✓</span>Pratique cerca de 15 minutos por dia</li>
+      <li><span class="check">✓</span>Siga a ordem recomendada das etapas</li>
+      <li><span class="check">✓</span>Evite pular atividades mesmo que pareçam fáceis</li>
+    </ul>
+  </div>
+  <div class="footer-message container">
+    <div class="fi">💛</div>
+    <div class="divider"></div>
+    <blockquote>A constância é essencial para o desenvolvimento da leitura.<br/>Utilize os materiais com tranquilidade e respeite o ritmo da criança.</blockquote>
+  </div>
+</div>
+
+<!-- ══════════ SCREEN: SOBRE O MÉTODO ══════════ -->
+<div id="screen-metodo" class="screen">
+  <p class="screen-title">🎓 Sobre o Método</p>
+  <p class="screen-sub">Entenda a base pedagógica por trás dos materiais desta jornada.</p>
+
+  <div class="bncc-highlight container">
+    <div class="bh-top">
+      <span style="font-size:18px">📘</span>
+      <span class="bh-badge">Base Pedagógica</span>
+    </div>
+    <p>Estrutura pedagógica organizada com base nas habilidades iniciais de alfabetização propostas pela BNCC para os anos iniciais — garantindo uma progressão coerente com o desenvolvimento real das crianças.</p>
+  </div>
+
+  <div class="method-card container">
+    <h3>🧭 Uma jornada com começo, meio e fim</h3>
+    <p>Os materiais seguem uma progressão pedagógica planejada — do desenvolvimento motor à fluência leitora — respeitando o ritmo natural de cada criança. Cada etapa prepara a base necessária para a próxima.</p>
+  </div>
+
+  <div class="section-label container" style="margin-top:4px">Princípios do método</div>
+  <div class="method-pillars container">
+    <div class="pillar">
+      <span class="pillar-icon">✋</span>
+      <div class="pillar-text">
+        <strong>Preparação antes da exigência</strong>
+        <p>Antes de pedir que a criança leia ou escreva, o método desenvolve a base motora e perceptiva necessária.</p>
+      </div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">👂</span>
+      <div class="pillar-text">
+        <strong>Consciência dos sons da língua</strong>
+        <p>A criança aprende a "ouvir" a língua antes de ler — o que acelera muito o processo de decodificação.</p>
+      </div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">📈</span>
+      <div class="pillar-text">
+        <strong>Progressão gradual e respeitosa</strong>
+        <p>As atividades aumentam em complexidade de forma suave. Nenhuma criança é posta à frente antes de estar pronta.</p>
+      </div>
+    </div>
+    <div class="pillar">
+      <span class="pillar-icon">🤝</span>
+      <div class="pillar-text">
+        <strong>Envolvimento ativo da família</strong>
+        <p>A presença do adulto como guia e encorajador é parte fundamental do processo de aprendizagem.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:14px"></div>
+  <div class="emo-quote container">
+    <span class="eq-icon">📚</span>
+    <p>"Um método só funciona quando é aplicado com presença e carinho. Você já está fazendo a parte mais importante."</p>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-tab active" id="tab-home"    onclick="showScreen('home')">
+      <span class="nav-icon">🏠</span>Início
+    </button>
+    <button class="nav-tab"        id="tab-rotina"  onclick="showScreen('rotina')">
+      <span class="nav-icon">🗓</span>Rotina
+    </button>
+    <button class="nav-tab"        id="tab-metodo"  onclick="showScreen('metodo')">
+      <span class="nav-icon">🎓</span>Método
+    </button>
+    <button class="nav-tab"        id="tab-ajuda"   onclick="showScreen('ajuda')">
+      <span class="nav-icon">❓</span>Ajuda
+    </button>
+  </div>
+</nav>
+
+<script>
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});
+    document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active')});
+    document.getElementById('screen-'+name).classList.add('active');
+    document.getElementById('tab-'+name).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(name==='etapas'){
+      var target=document.getElementById('etapas-modules');
+      if(target.childElementCount===0){
+        var src=document.getElementById('home-modules');
+        target.innerHTML=src.innerHTML;
+        target.querySelectorAll('.module-card').forEach(function(card){
+          var nid='e-'+card.id; card.id=nid;
+          card.setAttribute('onclick',"toggleModule('"+nid+"')");
+          card.querySelectorAll('[onclick]').forEach(function(b){b.setAttribute('onclick','event.stopPropagation()')});
+        });
+      }
+    }
+  }
+
+  function toggleModule(id) {
+    var card=document.getElementById(id);
+    card.classList.toggle('open');
+    if(card.classList.contains('open')){
+      setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'})},50);
+    }
+  }
+
+  function openModuleFromHome() {
+    var mod=document.getElementById('mod-1');
+    if(!mod.classList.contains('open'))mod.classList.add('open');
+    setTimeout(function(){mod.scrollIntoView({behavior:'smooth',block:'start'})},50);
+  }
+</script>
+</body>
+</html>
